@@ -9,9 +9,9 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="80"/>
-            <RowDefinition Height="80"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="60"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="80"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -20,14 +20,27 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Label Grid.Row="0" Grid.ColumnSpan="4" HorizontalAlignment="Center" FontSize="40">通用总线调试工具</Label>
-        <DataGrid Margin="10,10,10,10" Grid.Row="2" Grid.ColumnSpan="2" x:Name="config_grid" AutoGenerateColumns="False">
+        <DataGrid Margin="10,10,10,10" Grid.Row="3" Grid.ColumnSpan="2" x:Name="config_grid" AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Id" Width="100" Binding="{Binding Id}"/>
                 <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
                 <DataGridTextColumn Header="Value" Width="100" Binding="{Binding Value}"/>
             </DataGrid.Columns>
         </DataGrid>
-        <Button Grid.Row="3" Grid.Column="0" Margin="10,10,10,10" FontSize="24">读取参数</Button>
-        <Button Grid.Row="3" Grid.Column="1" Margin="10,10,10,10" FontSize="24">保存参数</Button>
+
+        <WrapPanel Grid.Row="1" Grid.ColumnSpan="2">
+            <Label Content="串口号" HorizontalAlignment="Right" Grid.Row="1" VerticalAlignment="Stretch" FontSize="20" Foreground="#FF6D6D6D"/>
+            <ComboBox x:Name="com_port"  HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="Auto" Margin="0,5,0,5" FontSize="20">
+            </ComboBox>
+            <Label Content="波特率" HorizontalAlignment="Right" Grid.Row="2" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" FontSize="20" Foreground="#FF6D6D6D"/>
+            <ComboBox x:Name="com_baud" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="Auto" Margin="0,5,0,5" FontSize="20"/>
+            <Label Content="设备地址" HorizontalAlignment="Right" Grid.Row="2" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" FontSize="20" Foreground="#FF6D6D6D"/>
+            <TextBox x:Name="addr" Text="1" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="Auto" Margin="0,5,0,5" FontSize="20"/>
+        </WrapPanel>
+        <WrapPanel Grid.Row="2" Grid.ColumnSpan="2">
+            <Button Grid.Row="4" Grid.Column="1"  FontSize="16" Margin="10,10,10,0" Height="50" BorderBrush="{x:Null}" Background="#FF5AC6FF" Foreground="#FF313131" Width="100">连接设备</Button>
+            <Button Grid.Row="4" Grid.Column="0" FontSize="16" Click="Button_Click" Margin="10,10,10,0" Height="50" BorderBrush="{x:Null}" Background="#FF5AC6FF" Foreground="#FF313131" Width="100">读取参数</Button>
+            <Button Grid.Row="4" Grid.Column="1"  FontSize="16" Margin="10,10,10,0" Height="50" BorderBrush="{x:Null}" Background="#FF5AC6FF" Foreground="#FF313131" Width="100">保存参数</Button>
+        </WrapPanel>
     </Grid>
 </Window>

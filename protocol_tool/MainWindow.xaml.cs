@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+using System.IO.Ports;
 namespace ungrain_tool
 {
     /// <summary>
@@ -42,6 +42,16 @@ namespace ungrain_tool
             lc.Add(new ConfigItem() { Id = 1, Name = "延时1", Value = "120" });
             lc.Add(new ConfigItem() { Id = 2, Name = "延时2", Value = "920" });
             config_grid.ItemsSource = lc;
+            List<string> lb = new List<string>() { "9600","115200"};
+            com_baud.ItemsSource=lb;
+            com_baud.SelectedIndex = 0;
+            com_port.ItemsSource = SerialPort.GetPortNames();
+            com_port.SelectedIndex = 0;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
