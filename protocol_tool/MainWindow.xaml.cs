@@ -30,11 +30,11 @@ namespace ungrain_tool
         Queue<byte[]> _frames = new Queue<byte[]>();
         public class ArgItem
         {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public string Value { get; set; }
+            public string Key { get; set; }
+            public int Value { get; set; }
         }
         List<ArgItem> _args = new List<ArgItem>();
+        Dictionary<string, int> args = new Dictionary<string, int>();
         enum PPP_STATE
         {
             S_IDLE,
@@ -144,32 +144,29 @@ namespace ungrain_tool
                 byte[] b = new byte[bs[1] + 2];
                 Array.Copy(bs, 2, b, 0, bs[1]);
                 string s = Encoding.Default.GetString(b);
-                Dictionary<string, string>  args = JsonConvert.DeserializeObject<Dictionary<string, string>>(s);
-                Dispatcher.Invoke(new Action(() => {
+                args = JsonConvert.DeserializeObject<Dictionary<string, int>>(s);
+                Dispatcher.Invoke(new Action(() =>
+                {
                     _args.Clear();
+                    config_grid.ItemsSource = null;
                     foreach (var item in args)
                     {
                         ArgItem item2 = new ArgItem();
-                        item2.Id = _args.Count;
-                        item2.Name = item.Key;
+                        item2.Key = item.Key;
                         item2.Value = item.Value;
                         _args.Add(item2);
                     }
                     config_grid.ItemsSource = _args;
                 }));
-                //config.delay_cam1 = (bs[3] << 8) + bs[2];
-                //config.delay_cam2 = (bs[5] << 8) + bs[4];
-                //config.run_times = (bs[7] << 8) + bs[6];
-                //config.out1_freq = (bs[9] << 8) + bs[8];
-                //config.out1_mag = (bs[11] << 8) + bs[10];
-                //config.out2_freq = (bs[13] << 8) + bs[12];
-                //config.out2_mag = (bs[15] << 8) + bs[14];
-                //config.out4_freq = (bs[17] << 8) + bs[16];
-                //config.out4_mag = (bs[19] << 8) + bs[18];
-                //config.target_speed = (bs[21] << 8) + bs[20];
-                //config.auto_stop_time = (bs[23] << 8) + bs[22];
             }
-            
+            if (bs[0] == 0xf2)
+            {
+                byte[] tp = new byte[bs.Length];
+                Array.Copy(bs, 1, tp, 0, bs.Length - 1);
+                Dispatcher.Invoke(new Action(() => {
+                    build_time.Content = Encoding.Default.GetString(tp);
+                }));
+            }
         }
         void action(byte[] bs)
         {
@@ -206,6 +203,7 @@ namespace ungrain_tool
             com_baud.SelectedIndex = 1;
             com_port.ItemsSource = SerialPort.GetPortNames();
             com_port.SelectedIndex = 0;
+            config_grid.ItemsSource = args;
             new Thread(serial_received).Start();
             new Thread(callback).Start();
         }
@@ -262,6 +260,29 @@ namespace ungrain_tool
                 _sp.Close();
                 button1.Content = "连接设备";
             }
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            foreach(ArgItem i in _args)
+            {
+                if (args.ContainsKey(i.Key))
+                {
+                    args[i.Key] = i.Value;
+                }
+            }
+            string s = JsonConvert.SerializeObject(args);
+            byte[] bs = Encoding.ASCII.GetBytes(s);
+            byte[] ds = new byte[bs.Length + 5] ;
+            ds[0] = 0x7e;
+            ds[1] = (byte)(bs.Length+1);
+            ds[2] = 0xf3;
+            Array.Copy(bs, 0, ds, 3, bs.Length);
+            byte[] tp = new byte[bs.Length + 2];
+            Array.Copy(ds, 1, tp, 0, bs.Length + 2);
+            ds[bs.Length + 3] = crc8_calc(tp, bs.Length+2);
+            ds[bs.Length + 4] = 0x7e;
+            send_bytes(translate(ds));
         }
     }
 }

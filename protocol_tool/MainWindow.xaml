@@ -5,42 +5,44 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ungrain_tool"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="800" Loaded="Window_Loaded">
+        Title="MainWindow" Height="600" Width="960" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="80"/>
             <RowDefinition Height="40"/>
-            <RowDefinition Height="60"/>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="240"/>
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Label Grid.Row="0" Grid.ColumnSpan="4" HorizontalAlignment="Center" FontSize="40">通用总线调试工具</Label>
-        <DataGrid Margin="10,10,10,10" Grid.Row="3" Grid.ColumnSpan="2" CanUserDeleteRows="False" CanUserAddRows="False" x:Name="config_grid" AutoGenerateColumns="False" GridLinesVisibility="None">
+        <Label Grid.Row="0" Grid.ColumnSpan="4" HorizontalAlignment="Center" FontSize="40" Content="通用调试工具"/>
+        <DataGrid Margin="10,10,10,10" Grid.Row="3" Grid.ColumnSpan="1" CanUserDeleteRows="False" CanUserAddRows="False" x:Name="config_grid" AutoGenerateColumns="False" GridLinesVisibility="None" d:ItemsSource="{d:SampleData ItemCount=5}">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Id" Width="100" Binding="{Binding Id}"/>
-                <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                <DataGridTextColumn Header="Name" Width="80" Binding="{Binding Key}"/>
                 <DataGridTextColumn Header="Value" Width="*" Binding="{Binding Value}"/>
             </DataGrid.Columns>
         </DataGrid>
 
         <WrapPanel Grid.Row="1" Grid.ColumnSpan="2">
             <Label Content="串口号" HorizontalAlignment="Right" Grid.Row="1" VerticalAlignment="Stretch" FontSize="20" Foreground="#FF6D6D6D"/>
-            <ComboBox x:Name="com_port"  HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="Auto" Margin="0,5,0,5" FontSize="20">
+            <ComboBox x:Name="com_port" MinWidth="60" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="Auto" Margin="0,5,0,5" FontSize="20">
             </ComboBox>
             <Label Content="波特率" HorizontalAlignment="Right" Grid.Row="2" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" FontSize="20" Foreground="#FF6D6D6D"/>
-            <ComboBox x:Name="com_baud" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="Auto" Margin="0,5,0,5" FontSize="20"/>
+            <ComboBox x:Name="com_baud" MinWidth="60" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="Auto" Margin="0,5,0,5" FontSize="20"/>
             <Label Content="设备地址" HorizontalAlignment="Right" Grid.Row="2" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" FontSize="20" Foreground="#FF6D6D6D"/>
-            <TextBox x:Name="addr" Text="1" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="Auto" Margin="0,5,0,5" FontSize="20"/>
+            <TextBox x:Name="addr" Text="1" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="40" Margin="0,5,0,5" FontSize="20"/>
+            <Button x:Name="button1"  FontSize="16" BorderBrush="{x:Null}" Background="#FF5AC6FF" Foreground="#FF313131" Width="100" Click="Button_Click_1" Margin="10,0,0,0">连接设备</Button>
         </WrapPanel>
         <WrapPanel Grid.Row="2" Grid.ColumnSpan="2">
-            <Button x:Name="button1" Grid.Row="4" Grid.Column="1"  FontSize="16" Margin="10,10,10,0" Height="50" BorderBrush="{x:Null}" Background="#FF5AC6FF" Foreground="#FF313131" Width="100" Click="Button_Click_1">连接设备</Button>
-            <Button Grid.Row="4" Grid.Column="0" FontSize="16" Click="Button_Click" Margin="10,10,10,0" Height="50" BorderBrush="{x:Null}" Background="#FF5AC6FF" Foreground="#FF313131" Width="100">读取参数</Button>
-            <Button Grid.Row="4" Grid.Column="1"  FontSize="16" Margin="10,10,10,0" Height="50" BorderBrush="{x:Null}" Background="#FF5AC6FF" Foreground="#FF313131" Width="100">保存参数</Button>
+            <Label x:Name="build_time" Content="build"/>
+        </WrapPanel>
+        <WrapPanel Grid.Row="5">
+            <Button Grid.Row="4" Grid.Column="0" FontSize="16" Click="Button_Click" Margin="10,0,10,0" Height="50" BorderBrush="{x:Null}" Background="#FF5AC6FF" Foreground="#FF313131" Width="100">读取参数</Button>
+            <Button Grid.Row="4" Grid.Column="1"  FontSize="16" Margin="10,0,10,0" Height="50" BorderBrush="{x:Null}" Background="#FF5AC6FF" Foreground="#FF313131" Width="100" Click="Button_Click_2">保存参数</Button>
         </WrapPanel>
     </Grid>
 </Window>
