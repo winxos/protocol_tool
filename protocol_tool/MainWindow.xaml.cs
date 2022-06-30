@@ -34,7 +34,11 @@ namespace ungrain_tool
             public int Value { get; set; }
         }
         List<ArgItem> _args = new List<ArgItem>();
+        List<ArgItem> _control_args = new List<ArgItem>();
         Dictionary<string, int> args = new Dictionary<string, int>();
+        Dictionary<string, int> control_args = new Dictionary<string, int>();
+        List<string> verson_info_db = new List<string>();
+        List<string> _com_args = new List<string>();
         enum PPP_STATE
         {
             S_IDLE,
@@ -161,12 +165,53 @@ namespace ungrain_tool
             }
             if (bs[0] == 0xf2)
             {
-                byte[] tp = new byte[bs.Length];
-                Array.Copy(bs, 1, tp, 0, bs.Length - 1);
-                Dispatcher.Invoke(new Action(() => {
-                    build_time.Content = Encoding.Default.GetString(tp);
+                byte[] b = new byte[bs[1] + 2];
+                Array.Copy(bs, 2, b, 0, bs[1]);
+                string s = Encoding.Default.GetString(b);
+                var tmp = JsonConvert.DeserializeObject<Dictionary<string, string>>(s);
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    verson_info_db.Clear();
+                    version_info.ItemsSource = null;
+                    foreach (var item in tmp)
+                    {
+                        verson_info_db.Add(item.Key +":\t" +item.Value);
+                    }
+                    version_info.ItemsSource = verson_info_db;
                 }));
             }
+            if (bs[0] == 0xf3) //read config
+            {
+                byte[] b = new byte[bs[1] + 2];
+                Array.Copy(bs, 2, b, 0, bs[1]);
+                string s = Encoding.Default.GetString(b);
+                control_args = JsonConvert.DeserializeObject<Dictionary<string, int>>(s);
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    _control_args.Clear();
+                    control_grid.ItemsSource = null;
+                    foreach (var item in control_args)
+                    {
+                        ArgItem item2 = new ArgItem();
+                        item2.Key = item.Key;
+                        item2.Value = item.Value;
+                        _control_args.Add(item2);
+                    }
+                    control_grid.ItemsSource = _control_args;
+                }));
+            }
+            Dispatcher.Invoke(new Action(() =>
+            {
+                com_data.ItemsSource = null; 
+                string s = $"[{DateTime.Now.ToLongTimeString()}.{DateTime.Now.Millisecond:000}]";
+                foreach (byte b in bs)
+                {
+                    s += $"{b:X2} ";
+                }
+                _com_args.Add(s);
+                com_data.ItemsSource = _com_args; 
+
+            }));
         }
         void action(byte[] bs)
         {
@@ -203,7 +248,8 @@ namespace ungrain_tool
             com_baud.SelectedIndex = 1;
             com_port.ItemsSource = SerialPort.GetPortNames();
             com_port.SelectedIndex = 0;
-            config_grid.ItemsSource = args;
+            version_info.ItemsSource = verson_info_db;
+            com_data.ItemsSource = _com_args;
             new Thread(serial_received).Start();
             new Thread(callback).Start();
         }
@@ -239,6 +285,14 @@ namespace ungrain_tool
             ds[3] = crc8_calc(tp, 2);
             send_bytes(translate(ds));
         }
+        private void get_control()
+        {
+            byte[] ds = new byte[] { 0x7e, 1, 0xf3, 0, 0x7e };
+            byte[] tp = new byte[2];
+            Array.Copy(ds, 1, tp, 0, 2);
+            ds[3] = crc8_calc(tp, 2);
+            send_bytes(translate(ds));
+        }
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             if (button1.Content.ToString() == "连接设备")
@@ -250,7 +304,7 @@ namespace ungrain_tool
                 _sp_flag.Set();
                 button1.Content = "断开设备";
                 Task.Run(async () => {
-                    await Task.Delay(500);
+                    await Task.Delay(100);
                     get_version();
                 });
             }
@@ -276,13 +330,46 @@ namespace ungrain_tool
             byte[] ds = new byte[bs.Length + 5] ;
             ds[0] = 0x7e;
             ds[1] = (byte)(bs.Length+1);
-            ds[2] = 0xf3;
+            ds[2] = 0xf1;
             Array.Copy(bs, 0, ds, 3, bs.Length);
             byte[] tp = new byte[bs.Length + 2];
             Array.Copy(ds, 1, tp, 0, bs.Length + 2);
             ds[bs.Length + 3] = crc8_calc(tp, bs.Length+2);
             ds[bs.Length + 4] = 0x7e;
             send_bytes(translate(ds));
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            get_control();
+        }
+
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            foreach (ArgItem i in _control_args)
+            {
+                if (control_args.ContainsKey(i.Key))
+                {
+                    control_args[i.Key] = i.Value;
+                }
+            }
+            string s = JsonConvert.SerializeObject(control_args);
+            byte[] bs = Encoding.ASCII.GetBytes(s);
+            byte[] ds = new byte[bs.Length + 5];
+            ds[0] = 0x7e;
+            ds[1] = (byte)(bs.Length + 1);
+            ds[2] = 0xf4;
+            Array.Copy(bs, 0, ds, 3, bs.Length);
+            byte[] tp = new byte[bs.Length + 2];
+            Array.Copy(ds, 1, tp, 0, bs.Length + 2);
+            ds[bs.Length + 3] = crc8_calc(tp, bs.Length + 2);
+            ds[bs.Length + 4] = 0x7e;
+            send_bytes(translate(ds));
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            Environment.Exit(0);
         }
     }
 }
