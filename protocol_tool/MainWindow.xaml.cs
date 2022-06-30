@@ -16,6 +16,8 @@ using System.IO.Ports;
 using System.Threading;
 using Newtonsoft.Json;
 using System.Windows.Threading;
+using System.Reflection;
+using System.Diagnostics;
 
 namespace ungrain_tool
 {
@@ -145,6 +147,10 @@ namespace ungrain_tool
         {
             if (bs[0] == 0xf0) //read config
             {
+                if (bs[1]>bs.Length-3)
+                {
+                    return;
+                }
                 byte[] b = new byte[bs[1] + 2];
                 Array.Copy(bs, 2, b, 0, bs[1]);
                 string s = Encoding.Default.GetString(b);
@@ -165,6 +171,10 @@ namespace ungrain_tool
             }
             if (bs[0] == 0xf2)
             {
+                if (bs[1] > bs.Length - 3)
+                {
+                    return;
+                }
                 byte[] b = new byte[bs[1] + 2];
                 Array.Copy(bs, 2, b, 0, bs[1]);
                 string s = Encoding.Default.GetString(b);
@@ -182,6 +192,10 @@ namespace ungrain_tool
             }
             if (bs[0] == 0xf3) //read config
             {
+                if (bs[1] > bs.Length - 3)
+                {
+                    return;
+                }
                 byte[] b = new byte[bs[1] + 2];
                 Array.Copy(bs, 2, b, 0, bs[1]);
                 string s = Encoding.Default.GetString(b);
@@ -209,8 +223,9 @@ namespace ungrain_tool
                     s += $"{b:X2} ";
                 }
                 _com_args.Add(s);
-                com_data.ItemsSource = _com_args; 
-
+                com_data.ItemsSource = _com_args;
+                com_data.SelectedIndex = com_data.Items.Count - 1;
+                com_data.ScrollIntoView(com_data.SelectedItem);
             }));
         }
         void action(byte[] bs)
@@ -247,9 +262,12 @@ namespace ungrain_tool
             com_baud.ItemsSource=lb;
             com_baud.SelectedIndex = 1;
             com_port.ItemsSource = SerialPort.GetPortNames();
-            com_port.SelectedIndex = 0;
+            com_port.SelectedIndex = SerialPort.GetPortNames().Length - 1;
             version_info.ItemsSource = verson_info_db;
             com_data.ItemsSource = _com_args;
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            FileVersionInfo fileVersion = FileVersionInfo.GetVersionInfo(assembly.Location);
+            Title = fileVersion.FileVersion;
             new Thread(serial_received).Start();
             new Thread(callback).Start();
         }
