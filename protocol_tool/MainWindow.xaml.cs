@@ -57,6 +57,15 @@ namespace ungrain_tool
             public int crc8;
             public byte[] data;
         }
+        byte add8(byte[]b,int len)
+        {
+            byte s = 0;
+            for(int i = 0; i < len; i++)
+            {
+                s += b[i];
+            }
+            return s;
+        }
         private byte crc8_calc(byte[] b, int len)
         {
             byte[] buffer = new byte[] {
@@ -145,74 +154,63 @@ namespace ungrain_tool
         }
         void analyse(byte[] bs)
         {
-            if (bs[0] == 0xf0) //read config
+            if (bs[0] == '!') //read config
             {
-                if (bs[1]>bs.Length-3)
+                if (bs.Length<3 || (bs[1]!='v' && bs[1]!='a' && bs[1] !='c'))
                 {
                     return;
                 }
-                byte[] b = new byte[bs[1] + 2];
-                Array.Copy(bs, 2, b, 0, bs[1]);
+                byte[] b = new byte[bs.Length - 3];
+                Array.Copy(bs, 2, b, 0, bs.Length - 3);
                 string s = Encoding.Default.GetString(b);
-                args = JsonConvert.DeserializeObject<Dictionary<string, int>>(s);
-                Dispatcher.Invoke(new Action(() =>
+                if (bs[1] == 'v') //ver
                 {
-                    _args.Clear();
-                    config_grid.ItemsSource = null;
-                    foreach (var item in args)
+                    var tmp = JsonConvert.DeserializeObject<Dictionary<string, string>>(s);
+                    Dispatcher.Invoke(new Action(() =>
                     {
-                        ArgItem item2 = new ArgItem();
-                        item2.Key = item.Key;
-                        item2.Value = item.Value;
-                        _args.Add(item2);
-                    }
-                    config_grid.ItemsSource = _args;
-                }));
-            }
-            if (bs[0] == 0xf2)
-            {
-                if (bs[1] > bs.Length - 3)
-                {
-                    return;
+                        verson_info_db.Clear();
+                        version_info.ItemsSource = null;
+                        foreach (var item in tmp)
+                        {
+                            verson_info_db.Add(item.Key + ":\t" + item.Value);
+                        }
+                        version_info.ItemsSource = verson_info_db;
+                    }));
                 }
-                byte[] b = new byte[bs[1] + 2];
-                Array.Copy(bs, 2, b, 0, bs[1]);
-                string s = Encoding.Default.GetString(b);
-                var tmp = JsonConvert.DeserializeObject<Dictionary<string, string>>(s);
-                Dispatcher.Invoke(new Action(() =>
+                else if (bs[1] == 'c') //config
                 {
-                    verson_info_db.Clear();
-                    version_info.ItemsSource = null;
-                    foreach (var item in tmp)
+                    args = JsonConvert.DeserializeObject<Dictionary<string, int>>(s);
+                    Dispatcher.Invoke(new Action(() =>
                     {
-                        verson_info_db.Add(item.Key +":\t" +item.Value);
-                    }
-                    version_info.ItemsSource = verson_info_db;
-                }));
-            }
-            if (bs[0] == 0xf3) //read config
-            {
-                if (bs[1] > bs.Length - 3)
-                {
-                    return;
+                        _args.Clear();
+                        config_grid.ItemsSource = null;
+                        foreach (var item in args)
+                        {
+                            ArgItem item2 = new ArgItem();
+                            item2.Key = item.Key;
+                            item2.Value = item.Value;
+                            _args.Add(item2);
+                        }
+                        config_grid.ItemsSource = _args;
+                    }));
                 }
-                byte[] b = new byte[bs[1] + 2];
-                Array.Copy(bs, 2, b, 0, bs[1]);
-                string s = Encoding.Default.GetString(b);
-                control_args = JsonConvert.DeserializeObject<Dictionary<string, int>>(s);
-                Dispatcher.Invoke(new Action(() =>
+                else if (bs[1] =='a') //action
                 {
-                    _control_args.Clear();
-                    control_grid.ItemsSource = null;
-                    foreach (var item in control_args)
+                    control_args = JsonConvert.DeserializeObject<Dictionary<string, int>>(s);
+                    Dispatcher.Invoke(new Action(() =>
                     {
-                        ArgItem item2 = new ArgItem();
-                        item2.Key = item.Key;
-                        item2.Value = item.Value;
-                        _control_args.Add(item2);
-                    }
-                    control_grid.ItemsSource = _control_args;
-                }));
+                        _control_args.Clear();
+                        control_grid.ItemsSource = null;
+                        foreach (var item in control_args)
+                        {
+                            ArgItem item2 = new ArgItem();
+                            item2.Key = item.Key;
+                            item2.Value = item.Value;
+                            _control_args.Add(item2);
+                        }
+                        control_grid.ItemsSource = _control_args;
+                    }));
+                }
             }
             Dispatcher.Invoke(new Action(() =>
             {
@@ -289,27 +287,21 @@ namespace ungrain_tool
         }
         private void get_config()
         {
-            byte[] ds = new byte[] { 0x7e, 1, 0xf0, 0, 0x7e };
-            byte[] tp = new byte[2];
-            Array.Copy(ds, 1, tp, 0, 2);
-            ds[3] = crc8_calc(tp, 2);
-            send_bytes(translate(ds));
+            byte[] ds = Encoding.Default.GetBytes("~cfg.");
+            ds[ds.Length - 1] =(byte)( add8(ds, ds.Length - 1)%128);
+            send_bytes(ds);
         }
         private void get_version()
         {
-            byte[] ds = new byte[] { 0x7e, 1, 0xf2, 0, 0x7e };
-            byte[] tp = new byte[2];
-            Array.Copy(ds, 1, tp, 0, 2);
-            ds[3] = crc8_calc(tp, 2);
-            send_bytes(translate(ds));
+            byte[] ds = Encoding.Default.GetBytes("~ver.");
+            ds[ds.Length-1] = (byte)(add8(ds, ds.Length - 1) % 128);
+            send_bytes(ds);
         }
         private void get_control()
         {
-            byte[] ds = new byte[] { 0x7e, 1, 0xf3, 0, 0x7e };
-            byte[] tp = new byte[2];
-            Array.Copy(ds, 1, tp, 0, 2);
-            ds[3] = crc8_calc(tp, 2);
-            send_bytes(translate(ds));
+            byte[] ds = Encoding.Default.GetBytes("~act.");
+            ds[ds.Length - 1] = (byte)(add8(ds, ds.Length - 1) % 128);
+            send_bytes(ds);
         }
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
