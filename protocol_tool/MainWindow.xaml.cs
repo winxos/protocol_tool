@@ -36,27 +36,10 @@ namespace ungrain_tool
             public int Value { get; set; }
         }
         List<ArgItem> _args = new List<ArgItem>();
-        List<ArgItem> _control_args = new List<ArgItem>();
         Dictionary<string, int> args = new Dictionary<string, int>();
-        Dictionary<string, int> control_args = new Dictionary<string, int>();
         List<string> verson_info_db = new List<string>();
+        List<ActionItem> control_items = new List<ActionItem>();
         List<string> _com_args = new List<string>();
-        enum PPP_STATE
-        {
-            S_IDLE,
-            S_LEN,
-            S_CMD,
-            S_DATA,
-            S_CRC
-        }
-        class PPP_Frame
-        {
-            public int len;
-            public int cmd;
-            public int count;
-            public int crc8;
-            public byte[] data;
-        }
         byte add8(byte[]b,int len)
         {
             byte s = 0;
@@ -65,57 +48,6 @@ namespace ungrain_tool
                 s += b[i];
             }
             return s;
-        }
-        private byte crc8_calc(byte[] b, int len)
-        {
-            byte[] buffer = new byte[] {
-                0, 0x5e, 0xbc, 0xe2, 0x61, 0x3f, 0xdd, 0x83, 0xc2, 0x9c, 0x7e, 0x20, 0xa3, 0xfd, 0x1f, 0x41,
-                0x9d, 0xc3, 0x21, 0x7f, 0xfc, 0xa2, 0x40, 30, 0x5f, 1, 0xe3, 0xbd, 0x3e, 0x60, 130, 220,
-                0x23, 0x7d, 0x9f, 0xc1, 0x42, 0x1c, 0xfe, 160, 0xe1, 0xbf, 0x5d, 3, 0x80, 0xde, 60, 0x62,
-                190, 0xe0, 2, 0x5c, 0xdf, 0x81, 0x63, 0x3d, 0x7c, 0x22, 0xc0, 0x9e, 0x1d, 0x43, 0xa1, 0xff,
-                70, 0x18, 250, 0xa4, 0x27, 0x79, 0x9b, 0xc5, 0x84, 0xda, 0x38, 0x66, 0xe5, 0xbb, 0x59, 7,
-                0xdb, 0x85, 0x67, 0x39, 0xba, 0xe4, 6, 0x58, 0x19, 0x47, 0xa5, 0xfb, 120, 0x26, 0xc4, 0x9a,
-                0x65, 0x3b, 0xd9, 0x87, 4, 90, 0xb8, 230, 0xa7, 0xf9, 0x1b, 0x45, 0xc6, 0x98, 0x7a, 0x24,
-                0xf8, 0xa6, 0x44, 0x1a, 0x99, 0xc7, 0x25, 0x7b, 0x3a, 100, 0x86, 0xd8, 0x5b, 5, 0xe7, 0xb9,
-                140, 210, 0x30, 110, 0xed, 0xb3, 0x51, 15, 0x4e, 0x10, 0xf2, 0xac, 0x2f, 0x71, 0x93, 0xcd,
-                0x11, 0x4f, 0xad, 0xf3, 0x70, 0x2e, 0xcc, 0x92, 0xd3, 0x8d, 0x6f, 0x31, 0xb2, 0xec, 14, 80,
-                0xaf, 0xf1, 0x13, 0x4d, 0xce, 0x90, 0x72, 0x2c, 0x6d, 0x33, 0xd1, 0x8f, 12, 0x52, 0xb0, 0xee,
-                50, 0x6c, 0x8e, 0xd0, 0x53, 13, 0xef, 0xb1, 240, 0xae, 0x4c, 0x12, 0x91, 0xcf, 0x2d, 0x73,
-                0xca, 0x94, 0x76, 40, 0xab, 0xf5, 0x17, 0x49, 8, 0x56, 180, 0xea, 0x69, 0x37, 0xd5, 0x8b,
-                0x57, 9, 0xeb, 0xb5, 0x36, 0x68, 0x8a, 0xd4, 0x95, 0xcb, 0x29, 0x77, 0xf4, 170, 0x48, 0x16,
-                0xe9, 0xb7, 0x55, 11, 0x88, 0xd6, 0x34, 0x6a, 0x2b, 0x75, 0x97, 0xc9, 0x4a, 20, 0xf6, 0xa8,
-                0x74, 0x2a, 200, 150, 0x15, 0x4b, 0xa9, 0xf7, 0xb6, 0xe8, 10, 0x54, 0xd7, 0x89, 0x6b, 0x35
-            };
-            byte num = 0;
-            for (int i = 0; i < len; i++)
-            {
-                num = buffer[num ^ b[i]];
-            }
-            return num;
-        }
-        private byte[] translate(byte[] s)
-        {
-            List<byte> bs = new List<byte>();
-            bs.Add(0x7e);
-            for (int i = 1; i < s.Length - 1; i++)
-            {
-                if (s[i] == 0x7e)
-                {
-                    bs.Add(0x7d);
-                    bs.Add(0x5e);
-                }
-                else if (s[i] == 0x7d)
-                {
-                    bs.Add(0x7d);
-                    bs.Add(0x5d);
-                }
-                else
-                {
-                    bs.Add(s[i]);
-                }
-            }
-            bs.Add(0x7e);
-            return bs.ToArray();
         }
         void serial_received()
         {
@@ -169,7 +101,6 @@ namespace ungrain_tool
                     Dispatcher.Invoke(new Action(() =>
                     {
                         verson_info_db.Clear();
-                        version_info.ItemsSource = null;
                         foreach (var item in tmp)
                         {
                             verson_info_db.Add(item.Key + ":\t" + item.Value);
@@ -182,8 +113,8 @@ namespace ungrain_tool
                     args = JsonConvert.DeserializeObject<Dictionary<string, int>>(s);
                     Dispatcher.Invoke(new Action(() =>
                     {
-                        _args.Clear();
                         config_grid.ItemsSource = null;
+                        _args.Clear();
                         foreach (var item in args)
                         {
                             ArgItem item2 = new ArgItem();
@@ -196,19 +127,18 @@ namespace ungrain_tool
                 }
                 else if (bs[1] =='a') //action
                 {
-                    control_args = JsonConvert.DeserializeObject<Dictionary<string, int>>(s);
+                    Dictionary<string, int> control_args = JsonConvert.DeserializeObject<Dictionary<string, int>>(s);
                     Dispatcher.Invoke(new Action(() =>
                     {
-                        _control_args.Clear();
-                        control_grid.ItemsSource = null;
+                        control_items.Clear();
                         foreach (var item in control_args)
                         {
                             ArgItem item2 = new ArgItem();
                             item2.Key = item.Key;
                             item2.Value = item.Value;
-                            _control_args.Add(item2);
+                            control_items.Add(new ActionItem() { Val = 0, Ena = item2.Key});
                         }
-                        control_grid.ItemsSource = _control_args;
+                        icTodoList.ItemsSource = control_items;
                     }));
                 }
             }
@@ -269,7 +199,11 @@ namespace ungrain_tool
             new Thread(serial_received).Start();
             new Thread(callback).Start();
         }
-
+        public class ActionItem
+        {
+            public int Val { get; set; }
+            public string Ena { get; set; }
+        }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             get_config();
@@ -344,9 +278,6 @@ namespace ungrain_tool
             Array.Copy(bs, 0, ds, 3, bs.Length);
             byte[] tp = new byte[bs.Length + 2];
             Array.Copy(ds, 1, tp, 0, bs.Length + 2);
-            ds[bs.Length + 3] = crc8_calc(tp, bs.Length+2);
-            ds[bs.Length + 4] = 0x7e;
-            send_bytes(translate(ds));
         }
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
@@ -356,30 +287,42 @@ namespace ungrain_tool
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-            foreach (ArgItem i in _control_args)
-            {
-                if (control_args.ContainsKey(i.Key))
-                {
-                    control_args[i.Key] = i.Value;
-                }
-            }
-            string s = JsonConvert.SerializeObject(control_args);
-            byte[] bs = Encoding.ASCII.GetBytes(s);
-            byte[] ds = new byte[bs.Length + 5];
-            ds[0] = 0x7e;
-            ds[1] = (byte)(bs.Length + 1);
-            ds[2] = 0xf4;
-            Array.Copy(bs, 0, ds, 3, bs.Length);
-            byte[] tp = new byte[bs.Length + 2];
-            Array.Copy(ds, 1, tp, 0, bs.Length + 2);
-            ds[bs.Length + 3] = crc8_calc(tp, bs.Length + 2);
-            ds[bs.Length + 4] = 0x7e;
-            send_bytes(translate(ds));
+
         }
 
         private void Window_Closed(object sender, EventArgs e)
         {
             Environment.Exit(0);
+        }
+
+        private void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+            Button btn = (Button)sender;
+            ActionItem obj = (ActionItem)btn.DataContext;
+            string s = string.Format("~run {0}={1}.", obj.Ena, obj.Val);
+            byte[] ds = Encoding.Default.GetBytes(s);
+            ds[ds.Length - 1] = (byte)(add8(ds, ds.Length - 1) % 128);
+            send_bytes(ds);
+        }
+
+        private void Button_Click_6(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_Click_7(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void CheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            CheckBox cb = (CheckBox)sender;
+            ActionItem obj = (ActionItem)cb.DataContext;
+            string s = string.Format("~run {0}={1}.", obj.Ena,cb.IsChecked==true?1:0);
+            byte[] ds = Encoding.Default.GetBytes(s);
+            ds[ds.Length - 1] = (byte)(add8(ds, ds.Length - 1) % 128);
+            send_bytes(ds);
         }
     }
 }

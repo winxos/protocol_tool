@@ -23,8 +23,8 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="240"/>
-            <ColumnDefinition Width="240"/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="280"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <TextBlock HorizontalAlignment="Center" Grid.Row="0" VerticalAlignment="Center" Grid.ColumnSpan="2" Style="{DynamicResource MaterialDesignHeadline6TextBlock}" FontSize="32" FontFamily="STSong">通用调试工具</TextBlock>
         <DataGrid Margin="10,0,10,10" Grid.Row="3" CanUserDeleteRows="False" CanUserAddRows="False" x:Name="config_grid" AutoGenerateColumns="False" GridLinesVisibility="None" d:ItemsSource="{d:SampleData ItemCount=5}" FontSize="16" FontFamily="Microsoft YaHei">
@@ -34,34 +34,42 @@
             </DataGrid.Columns>
         </DataGrid>
         <WrapPanel Grid.Row="1" Grid.ColumnSpan="3">
-            <Label Content="串口号" HorizontalAlignment="Right" Grid.Row="1" VerticalAlignment="Stretch" FontSize="20" Foreground="#FF6D6D6D" FontFamily="STSong"/>
+            <Label Content="串口号" HorizontalAlignment="Right" Grid.Row="1" VerticalAlignment="Stretch" FontSize="20" FontFamily="STSong"/>
             <ComboBox x:Name="com_port" MinWidth="60" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="Auto" Margin="0,5,0,5" FontSize="20" FontFamily="Microsoft YaHei">
             </ComboBox>
-            <Label Content="波特率" HorizontalAlignment="Right" Grid.Row="2" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" FontSize="20" Foreground="#FF6D6D6D" FontFamily="STSong"/>
+            <Label Content="波特率" HorizontalAlignment="Right" Grid.Row="2" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" FontSize="20" FontFamily="STSong"/>
             <ComboBox x:Name="com_baud" MinWidth="60" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="Auto" Margin="0,5,0,5" FontSize="20" FontFamily="Microsoft YaHei"/>
-            <Label Content="设备地址" HorizontalAlignment="Right" Grid.Row="2" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" FontSize="20" Foreground="#FF6D6D6D" FontFamily="STSong"/>
+            <Label Content="设备地址" HorizontalAlignment="Right" Grid.Row="2" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" FontSize="20" FontFamily="STSong"/>
             <TextBox x:Name="addr" Text="1" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="40" Margin="0,5,0,5" FontSize="20" FontFamily="Microsoft YaHei"/>
-            <Button x:Name="button1"  FontSize="16" BorderBrush="{x:Null}" Background="#FF5AC6FF" Foreground="#FF313131" Width="100" Click="Button_Click_1" Margin="10,0,0,0" FontFamily="Microsoft YaHei">连接设备</Button>
+            <Button x:Name="button1"  FontSize="16" BorderBrush="{x:Null}" Width="100" Click="Button_Click_1" Margin="10,0,0,0" FontFamily="Microsoft YaHei">连接设备</Button>
         </WrapPanel>
         <WrapPanel Grid.Row="4" Grid.Column="0">
-            <Button  FontSize="16" Click="Button_Click" Margin="10,0,10,0" Height="50" BorderBrush="{x:Null}" Background="#FF5AC6FF" Foreground="#FF565656" Width="100" FontFamily="Microsoft YaHei">读取参数</Button>
-            <Button  FontSize="16" Margin="10,0,10,0" Height="50" BorderBrush="{x:Null}" Background="#FF5AC6FF" Foreground="#FF565656" Width="100" Click="Button_Click_2" FontFamily="Microsoft YaHei">保存参数</Button>
+            <Button  FontSize="16" Click="Button_Click" Margin="10,0,10,0" Height="50" Width="100" FontFamily="Microsoft YaHei">读取参数</Button>
+            <Button  FontSize="16" Margin="10,0,10,0" Height="50" Width="100" Click="Button_Click_2" FontFamily="Microsoft YaHei">保存参数</Button>
         </WrapPanel>
         <ListBox x:Name="version_info" Grid.Column="2" d:ItemsSource="{d:SampleData ItemCount=5}" ScrollViewer.VerticalScrollBarVisibility="Disabled" BorderThickness="0,0,0,0" IsEnabled="False" FontFamily="Microsoft YaHei"/>
         <Label Content="存储参数" Grid.Row="2" VerticalAlignment="Center" Height="26" FontFamily="STSong"/>
         <Label Grid.Column="1" Content="运行参数" Grid.Row="2" VerticalAlignment="Center" Margin="0,0,319,0" Grid.ColumnSpan="2" Height="26" FontFamily="STSong"/>
         <Label Grid.Column="2" Content="通信数据" Grid.Row="2" VerticalAlignment="Center" Height="26" FontFamily="STSong"/>
-        <DataGrid Margin="10,0,10,10" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" CanUserDeleteRows="False" CanUserAddRows="False" x:Name="control_grid" AutoGenerateColumns="False" GridLinesVisibility="None" d:ItemsSource="{d:SampleData ItemCount=5}" FontSize="16" FontFamily="Microsoft YaHei">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Key}"/>
-                <DataGridTextColumn Header="Value" Width="*" Binding="{Binding Value}"/>
-                <materialDesign:DataGridTextColumn/>
-            </DataGrid.Columns>
-        </DataGrid>
         <WrapPanel Grid.Row="4" Grid.Column="1">
-            <Button FontSize="16" Margin="10,0,10,0" Height="50" BorderBrush="{x:Null}" Background="#FF5AFFCE" Foreground="#FF565656" Width="100" Click="Button_Click_3" Content="读取运行" Cursor="Hand" FontFamily="Microsoft YaHei"/>
-            <Button FontSize="16" Margin="10,0,10,0" Height="50" BorderBrush="{x:Null}" Background="#FF5AFFCE" Foreground="#FF565656" Width="100" Click="Button_Click_4" Content="执行参数" FontFamily="Microsoft YaHei"/>
+            <Button FontSize="16" Margin="10,0,10,0" Height="50" Width="100" Click="Button_Click_3" Content="获取运行" Cursor="Hand" FontFamily="Microsoft YaHei"/>
         </WrapPanel>
         <ListBox x:Name="com_data" Grid.RowSpan="2" Grid.Column="2" Grid.Row="3" d:ItemsSource="{d:SampleData ItemCount=5}" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0,10,10,10" FontFamily="Microsoft YaHei"/>
+        <ItemsControl Name="icTodoList" Grid.Column="1" Grid.Row="3">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox Content="{Binding Ena}"  Width="120" FlowDirection="RightToLeft" Margin="0,0,5,5" Click="CheckBox_Click"  FontSize="28" FontFamily="Microsoft YaHei"></CheckBox>
+                        <TextBox Text="{Binding Val}" Width="40" FontSize="24" FontFamily="Microsoft YaHei" Margin="10,0,0,0"></TextBox>
+                        <Button Content="Set" Margin="0,0,5,5" Click="Button_Click_5" FontSize="16" FontFamily="Microsoft YaHei"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 </Window>
