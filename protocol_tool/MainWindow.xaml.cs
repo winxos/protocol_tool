@@ -101,6 +101,7 @@ namespace ungrain_tool
                     Dispatcher.Invoke(new Action(() =>
                     {
                         verson_info_db.Clear();
+                        version_info.ItemsSource = null;
                         foreach (var item in tmp)
                         {
                             verson_info_db.Add(item.Key + ":\t" + item.Value);
@@ -299,7 +300,7 @@ namespace ungrain_tool
         {
             Button btn = (Button)sender;
             ActionItem obj = (ActionItem)btn.DataContext;
-            string s = string.Format("~run {0}={1}.", obj.Ena, obj.Val);
+            string s = string.Format("~r{0}={1}.", obj.Ena, obj.Val);
             byte[] ds = Encoding.Default.GetBytes(s);
             ds[ds.Length - 1] = (byte)(add8(ds, ds.Length - 1) % 128);
             send_bytes(ds);
@@ -319,7 +320,7 @@ namespace ungrain_tool
         {
             CheckBox cb = (CheckBox)sender;
             ActionItem obj = (ActionItem)cb.DataContext;
-            string s = string.Format("~run {0}={1}.", obj.Ena,cb.IsChecked==true?1:0);
+            string s = string.Format("~r{0}={1}.", obj.Ena,cb.IsChecked==true?1:0);
             byte[] ds = Encoding.Default.GetBytes(s);
             ds[ds.Length - 1] = (byte)(add8(ds, ds.Length - 1) % 128);
             send_bytes(ds);

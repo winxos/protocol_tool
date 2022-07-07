@@ -11,5 +11,5 @@ using System.Reflection;
 [assembly: AssemblyProduct("通用调试工具")]
 [assembly: AssemblyCopyright("wvv")]
 [assembly: AssemblyTitle("debug tool")]
-[assembly: AssemblyFileVersion("3.1.0.1")]
+[assembly: AssemblyFileVersion("3.1.0.4")]
 [assembly: AssemblyVersion("2.0.0.0")]
