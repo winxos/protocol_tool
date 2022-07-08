@@ -28,7 +28,7 @@ namespace ungrain_tool
     {
         List<byte> rx_buf = new List<byte>();
         SerialPort _sp = new SerialPort();
-        ManualResetEvent _sp_flag = new ManualResetEvent(false);
+        AutoResetEvent _sp_flag = new AutoResetEvent(false);
         Queue<byte[]> _frames = new Queue<byte[]>();
         public class ArgItem
         {
@@ -54,10 +54,10 @@ namespace ungrain_tool
             int last_received_timeout = 0;
             List<byte> frame = new List<byte>();
             bool is_ticking = false;
-            const int idle_tick = 2;
+            const int idle_tick = 5;
             while (true)
             {
-                if (_sp_flag.WaitOne())
+                if (_sp.IsOpen)
                 {
                     while (_sp.BytesToRead > 0)
                     {
@@ -72,16 +72,16 @@ namespace ungrain_tool
                     if (is_ticking)
                     {
                         last_received_timeout++;
-
                         if (last_received_timeout >= idle_tick)
                         {
                             //idle callback
                             _frames.Enqueue(frame.ToArray());
+                            _sp_flag.Set();
                             is_ticking = false;
                         }
                     }
                 }
-                Thread.Sleep(2);
+                Thread.Sleep(5);
             }
         }
         void analyse(byte[] bs)
@@ -246,7 +246,6 @@ namespace ungrain_tool
                 _sp.BaudRate = int.Parse(com_baud.SelectedValue.ToString());
                 _sp.Encoding = Encoding.UTF8;
                 _sp.Open();
-                _sp_flag.Set();
                 button1.Content = "断开设备";
                 Task.Run(async () => {
                     await Task.Delay(100);
@@ -255,7 +254,6 @@ namespace ungrain_tool
             }
             else
             {
-                _sp_flag.Reset();
                 _sp.Close();
                 button1.Content = "连接设备";
             }
@@ -324,6 +322,13 @@ namespace ungrain_tool
             byte[] ds = Encoding.Default.GetBytes(s);
             ds[ds.Length - 1] = (byte)(add8(ds, ds.Length - 1) % 128);
             send_bytes(ds);
+        }
+
+        private void Button_Click_8(object sender, RoutedEventArgs e)
+        {
+            com_data.ItemsSource = null;
+            _com_args.Clear();
+            com_data.ItemsSource = _com_args;
         }
     }
 }

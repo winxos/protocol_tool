@@ -17,7 +17,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="80"/>
             <RowDefinition Height="40"/>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="40"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
@@ -61,7 +61,7 @@
             </ListBox.ItemContainerStyle>
         </ListBox>
         <Label Content="存储参数" Grid.Row="2" VerticalAlignment="Center" Height="26" FontFamily="STSong"/>
-        <Label Grid.Column="1" Content="运行参数" Grid.Row="2" VerticalAlignment="Center" Margin="0,0,319,0" Grid.ColumnSpan="2" Height="26" FontFamily="STSong"/>
+        <Label Grid.Column="1" Content="控制参数" Grid.Row="2" VerticalAlignment="Center" Margin="0,0,319,0" Grid.ColumnSpan="2" Height="26" FontFamily="STSong"/>
         <WrapPanel Grid.Row="4" Grid.Column="1" FlowDirection="RightToLeft">
             <Button FontSize="16" Margin="10,0,10,0" Height="50" Width="100" Click="Button_Click_3" Content="获取参数" Cursor="Hand" FontFamily="Microsoft YaHei"/>
         </WrapPanel>
@@ -83,14 +83,17 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <CheckBox Content="{Binding Ena}" Width="120" FlowDirection="RightToLeft" Margin="0,0,10,0" Click="CheckBox_Click"  FontSize="20" FontFamily="Microsoft YaHei" AutomationProperties.AccessKey=""></CheckBox>
-                            <TextBox Text="{Binding Val}" Width="40" FontSize="20" FontFamily="Microsoft YaHei" Margin="0,0,10,0"></TextBox>
-                            <Button Content="Set" Margin="0,0,0,0" Click="Button_Click_5" FontSize="14" FontFamily="Microsoft YaHei"/>
+                            <CheckBox Content="{Binding Ena}" Width="120" FlowDirection="RightToLeft" Margin="0,0,10,0" Click="CheckBox_Click"  FontSize="16" AutomationProperties.AccessKey=""></CheckBox>
+                            <TextBox Text="{Binding Val}" Width="40" FontSize="14" Margin="0,0,10,0"></TextBox>
+                            <Button Content="Set" Margin="0,0,0,2" Click="Button_Click_5" FontSize="14" Background="#FFC8C8C8" BorderBrush="Black"/>
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
-        <CheckBox Grid.Column="2" Content="历史记录  十六进制显示" HorizontalAlignment="Left" Grid.Row="2" VerticalAlignment="Top" FlowDirection="RightToLeft" IsChecked="True"/>
+        <WrapPanel Grid.Column="2" Grid.Row="2">
+            <CheckBox Content="历史记录  十六进制显示" HorizontalAlignment="Left" VerticalAlignment="Center" FlowDirection="RightToLeft" IsChecked="True"/>
+            <Button Background="#FFE2E2E2" BorderBrush="{x:Null}" Foreground="#FF464646" Margin="10,0,0,5" FontSize="12" FontWeight="Normal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="Button_Click_8">清除记录</Button>
+        </WrapPanel>
     </Grid>
 </Window>
