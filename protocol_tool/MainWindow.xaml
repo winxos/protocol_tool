@@ -92,7 +92,7 @@
             </ItemsControl>
         </ScrollViewer>
         <WrapPanel Grid.Column="2" Grid.Row="2">
-            <CheckBox Content="历史记录  十六进制显示" HorizontalAlignment="Left" VerticalAlignment="Center" FlowDirection="RightToLeft" IsChecked="True"/>
+            <CheckBox x:Name="history_hex" Content="历史记录  十六进制显示" HorizontalAlignment="Left" VerticalAlignment="Center" FlowDirection="RightToLeft" Click="history_hex_Click"/>
             <Button Background="#FFE2E2E2" BorderBrush="{x:Null}" Foreground="#FF464646" Margin="10,0,0,5" FontSize="12" FontWeight="Normal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="Button_Click_8">清除记录</Button>
         </WrapPanel>
     </Grid>

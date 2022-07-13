@@ -35,6 +35,17 @@ namespace ungrain_tool
             public string Key { get; set; }
             public int Value { get; set; }
         }
+        public class RawData
+        {
+            public DateTime tim { get; set; }
+            public byte[] data { get; set; }
+            public RawData(DateTime tim, byte[] data)
+            {
+                this.tim = tim;
+                this.data = data;
+            }
+        }
+        List<RawData> lrd = new List<RawData>();
         List<ArgItem> _args = new List<ArgItem>();
         Dictionary<string, int> args = new Dictionary<string, int>();
         List<string> verson_info_db = new List<string>();
@@ -145,16 +156,8 @@ namespace ungrain_tool
             }
             Dispatcher.Invoke(new Action(() =>
             {
-                com_data.ItemsSource = null; 
-                string s = $"[{DateTime.Now.ToLongTimeString()}.{DateTime.Now.Millisecond:000}]";
-                foreach (byte b in bs)
-                {
-                    s += $"{b:X2} ";
-                }
-                _com_args.Add(s);
-                com_data.ItemsSource = _com_args;
-                com_data.SelectedIndex = com_data.Items.Count - 1;
-                com_data.ScrollIntoView(com_data.SelectedItem);
+                lrd.Add(new RawData(DateTime.Now, bs));
+                update_history();
             }));
         }
         void action(byte[] bs)
@@ -323,12 +326,40 @@ namespace ungrain_tool
             ds[ds.Length - 1] = (byte)(add8(ds, ds.Length - 1) % 128);
             send_bytes(ds);
         }
-
+        private void update_history()
+        {
+            com_data.ItemsSource = null;
+            _com_args.Clear();
+            foreach (RawData r in lrd)
+            {
+                string s = $"[{r.tim.ToLongTimeString()}.{r.tim.Millisecond:000}]";
+                if (history_hex.IsChecked == true)
+                {
+                    foreach (byte b in r.data)
+                    {
+                        s += $"{b:X2} ";
+                    }
+                }
+                else
+                {
+                    s += Encoding.ASCII.GetString(r.data);
+                }
+                _com_args.Add(s);
+            }
+            com_data.ItemsSource = _com_args;
+            com_data.SelectedIndex = com_data.Items.Count - 1;
+            com_data.ScrollIntoView(com_data.SelectedItem);
+        }
         private void Button_Click_8(object sender, RoutedEventArgs e)
         {
             com_data.ItemsSource = null;
             _com_args.Clear();
             com_data.ItemsSource = _com_args;
+        }
+
+        private void history_hex_Click(object sender, RoutedEventArgs e)
+        {
+            update_history();
         }
     }
 }
