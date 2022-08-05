@@ -27,7 +27,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <TextBlock HorizontalAlignment="Center" Grid.Row="0" VerticalAlignment="Center" Grid.ColumnSpan="2" Style="{DynamicResource MaterialDesignHeadline6TextBlock}" FontSize="32" FontFamily="STSong">通用调试工具</TextBlock>
-        <DataGrid Margin="10,0,10,10" Grid.Row="3" CanUserDeleteRows="False" CanUserAddRows="False" x:Name="config_grid" AutoGenerateColumns="False" GridLinesVisibility="None" d:ItemsSource="{d:SampleData ItemCount=5}" FontSize="16" FontFamily="Microsoft YaHei">
+        <DataGrid Margin="10,0,10,0" Grid.Row="3" CanUserDeleteRows="False" CanUserAddRows="False" x:Name="config_grid" AutoGenerateColumns="False" GridLinesVisibility="None" d:ItemsSource="{d:SampleData ItemCount=5}" FontSize="12" FontFamily="Arial">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Key}"/>
                 <DataGridTextColumn Header="Value" Width="80" Binding="{Binding Value}"/>
@@ -37,6 +37,7 @@
                     <Setter Property="Height" Value="Auto"/>
                 </Style>
             </DataGrid.RowStyle>
+            <DataGrid.AlternatingRowBackground>LightBlue</DataGrid.AlternatingRowBackground>
         </DataGrid>
         <WrapPanel Grid.Row="1" Grid.ColumnSpan="3">
             <Label Content="串口号" HorizontalAlignment="Right" Grid.Row="1" VerticalAlignment="Stretch" FontSize="20" FontFamily="STSong"/>

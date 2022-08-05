@@ -272,14 +272,10 @@ namespace ungrain_tool
                 }
             }
             string s = JsonConvert.SerializeObject(args);
-            byte[] bs = Encoding.ASCII.GetBytes(s);
-            byte[] ds = new byte[bs.Length + 5] ;
-            ds[0] = 0x7e;
-            ds[1] = (byte)(bs.Length+1);
-            ds[2] = 0xf1;
-            Array.Copy(bs, 0, ds, 3, bs.Length);
-            byte[] tp = new byte[bs.Length + 2];
-            Array.Copy(ds, 1, tp, 0, bs.Length + 2);
+            string tmp = string.Format("~s{0}.",s);
+            byte[] ds = Encoding.ASCII.GetBytes(tmp);
+            ds[ds.Length - 1] = (byte)(add8(ds, ds.Length - 1) % 128);
+            send_bytes(ds);
         }
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
@@ -353,6 +349,7 @@ namespace ungrain_tool
         private void Button_Click_8(object sender, RoutedEventArgs e)
         {
             com_data.ItemsSource = null;
+            lrd.Clear();
             _com_args.Clear();
             com_data.ItemsSource = _com_args;
         }
