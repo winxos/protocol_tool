@@ -97,6 +97,11 @@ namespace ungrain_tool
         }
         void analyse(byte[] bs)
         {
+            Dispatcher.Invoke(new Action(() =>
+            {
+                lrd.Add(new RawData(DateTime.Now, bs));
+                update_history();
+            }));
             if (bs[0] == '!') //read config
             {
                 if (bs.Length<3 || (bs[1]!='v' && bs[1]!='a' && bs[1] !='c'))
@@ -154,11 +159,6 @@ namespace ungrain_tool
                     }));
                 }
             }
-            Dispatcher.Invoke(new Action(() =>
-            {
-                lrd.Add(new RawData(DateTime.Now, bs));
-                update_history();
-            }));
         }
         void action(byte[] bs)
         {
