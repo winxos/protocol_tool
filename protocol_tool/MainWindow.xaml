@@ -61,7 +61,7 @@
                 </Style>
             </ListBox.ItemContainerStyle>
         </ListBox>
-        <Label Content="存储参数" Grid.Row="2" VerticalAlignment="Center" Height="26" FontFamily="STSong"/>
+        <Label Content="存储参数" Grid.Row="2" VerticalAlignment="Center" Height="26" FontFamily="STSong" Margin="0,0,174,0"/>
         <Label Grid.Column="1" Content="控制参数" Grid.Row="2" VerticalAlignment="Center" Margin="0,0,319,0" Grid.ColumnSpan="2" Height="26" FontFamily="STSong"/>
         <WrapPanel Grid.Row="4" Grid.Column="1" FlowDirection="RightToLeft">
             <Button FontSize="16" Margin="10,0,10,0" Height="50" Width="100" Click="Button_Click_3" Content="获取参数" Cursor="Hand" FontFamily="Microsoft YaHei"/>
@@ -96,5 +96,7 @@
             <CheckBox x:Name="history_hex" Content="历史记录  十六进制显示" HorizontalAlignment="Left" VerticalAlignment="Center" FlowDirection="RightToLeft" Click="history_hex_Click"/>
             <Button Background="#FFE2E2E2" BorderBrush="{x:Null}" Foreground="#FF464646" Margin="10,0,0,5" FontSize="12" FontWeight="Normal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="Button_Click_8">清除记录</Button>
         </WrapPanel>
+        <Button Content="load" HorizontalAlignment="Left" Margin="66,0,0,0" Grid.Row="2" VerticalAlignment="Center" Click="Button_Click_10"/>
+        <Button Content="export" HorizontalAlignment="Left" Margin="130,0,0,0" Grid.Row="2" VerticalAlignment="Center" Click="Button_Click_9"/>
     </Grid>
 </Window>

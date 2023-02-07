@@ -18,6 +18,7 @@ using Newtonsoft.Json;
 using System.Windows.Threading;
 using System.Reflection;
 using System.Diagnostics;
+using System.IO;
 
 namespace ungrain_tool
 {
@@ -357,6 +358,35 @@ namespace ungrain_tool
         private void history_hex_Click(object sender, RoutedEventArgs e)
         {
             update_history();
+        }
+
+        private void Button_Click_9(object sender, RoutedEventArgs e)
+        {
+            string s = JsonConvert.SerializeObject(args);
+            File.WriteAllText("config.json", s);
+        }
+
+        private void Button_Click_10(object sender, RoutedEventArgs e)
+        {
+            string s = File.ReadAllText("config.json");
+            try
+            {
+                args = JsonConvert.DeserializeObject<Dictionary<string, int>>(s);
+                config_grid.ItemsSource = null;
+                _args.Clear();
+                foreach (var item in args)
+                {
+                    ArgItem item2 = new ArgItem();
+                    item2.Key = item.Key;
+                    item2.Value = item.Value;
+                    _args.Add(item2);
+                }
+                config_grid.ItemsSource = _args;
+            }
+            catch (Exception aa)
+            {
+                MessageBox.Show(aa.Message);
+            }
         }
     }
 }
