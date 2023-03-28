@@ -27,7 +27,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <TextBlock HorizontalAlignment="Center" Grid.Row="0" VerticalAlignment="Center" Grid.ColumnSpan="2" Style="{DynamicResource MaterialDesignHeadline6TextBlock}" FontSize="32" FontFamily="STSong">通用调试工具</TextBlock>
-        <DataGrid Margin="10,0,10,0" Grid.Row="3" CanUserDeleteRows="False" CanUserAddRows="False" x:Name="config_grid" AutoGenerateColumns="False" GridLinesVisibility="None" d:ItemsSource="{d:SampleData ItemCount=5}" FontSize="12" FontFamily="Arial">
+        <DataGrid Margin="10,0,10,0" CanUserSortColumns="False" Grid.Row="3" CanUserDeleteRows="False" CanUserAddRows="False" x:Name="config_grid" AutoGenerateColumns="False" GridLinesVisibility="None" d:ItemsSource="{d:SampleData ItemCount=5}" FontSize="12" FontFamily="Arial">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Key}"/>
                 <DataGridTextColumn Header="Value" Width="80" Binding="{Binding Value}"/>
